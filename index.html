@@ -34,10 +34,13 @@ h1,h2,h3,.tab,.kpi b,.big b{font-family:'Outfit',sans-serif}
 
 .app{max-width:600px;margin:0 auto;padding:16px 16px 30px}
 
-header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:16px}
-h1{font-size:11px;font-weight:600;color:var(--purple);text-transform:uppercase;letter-spacing:0.15em}
-.sync-status{font-size:10px;color:var(--muted);margin-top:2px}
-.date-title{font-size:17px;font-weight:700;margin-top:2px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+/* En-tête centré et titre agrandi */
+header{border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:16px;text-align:center;position:relative}
+h1{font-size:18px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px}
+.sync-status{font-size:10px;color:var(--muted);margin-bottom:10px}
+
+.header-top{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+.date-title{font-size:17px;font-weight:700;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 
 .icon-btn{border:1px solid var(--line);background:var(--card);color:var(--text);width:34px;height:34px;border-radius:10px;cursor:pointer;display:grid;place-items:center;font-size:13px;transition:0.2s}
 .icon-btn:active{transform:scale(0.92)}
@@ -47,7 +50,7 @@ h1{font-size:11px;font-weight:600;color:var(--purple);text-transform:uppercase;l
 .week-day-btn{background:var(--card);border:1px solid var(--line);color:var(--muted);padding:8px 0;border-radius:10px;font-size:11px;font-weight:600;cursor:pointer;text-align:center;transition:0.2s}
 .week-day-btn.active{background:var(--accent);color:var(--on);border-color:var(--accent);font-weight:700}
 
-/* BARRE DE NAVIGATION FIXE EN BAS (Style App Native iOS) */
+/* BARRE DE NAVIGATION FIXE EN BAS */
 .tabs{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:8px 6px calc(18px + env(safe-area-inset-bottom)) 6px;z-index:1000;box-shadow:0 -4px 20px rgba(0,0,0,0.3)}
 .tab{border:0;background:none;color:var(--muted);font-size:10px;font-weight:600;text-transform:uppercase;padding:8px 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;transition:0.2s}
 .tab.on{color:var(--accent)}
@@ -90,19 +93,20 @@ h1{font-size:11px;font-weight:600;color:var(--purple);text-transform:uppercase;l
 
 <div class="app">
   <header>
-    <div>
-      <h1>Daily Tracker Pro</h1>
-      <div class="sync-status" id="syncStatus">Cloud : Connecté</div>
+    <h1>Daily Tracker Pro</h1>
+    <div class="sync-status" id="syncStatus">Cloud : Connecté</div>
+    
+    <div class="header-top">
       <div class="date-title">
         <button class="icon-btn" id="prevDay">&lt;</button>
         <span id="todayText"></span>
         <button class="icon-btn" id="nextDay">&gt;</button>
         <button class="icon-btn" id="todayReset" style="font-size:10px;padding:0 6px;width:auto">Aujourd'hui</button>
       </div>
-    </div>
-    <div style="display:flex;gap:6px;align-items:center">
-      <input type="date" id="datePicker" style="background:var(--secondary);border:1px solid var(--line);color:var(--text);padding:6px;border-radius:10px;font-size:11px;cursor:pointer">
-      <button class="icon-btn" id="themeBtn" aria-label="Theme">&#9680;</button>
+      <div style="display:flex;gap:6px;align-items:center">
+        <input type="date" id="datePicker" style="background:var(--secondary);border:1px solid var(--line);color:var(--text);padding:6px;border-radius:10px;font-size:11px;cursor:pointer">
+        <button class="icon-btn" id="themeBtn" aria-label="Theme">&#9680;</button>
+      </div>
     </div>
   </header>
 
