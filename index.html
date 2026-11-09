@@ -4,6 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Daily Tracker Pro</title>
+<!-- Configuration PWA et Icône pour iPhone/PC -->
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Tracker">
+<link rel="apple-touch-icon" href="https://img.icons8.com/fluency/192/checked-2--v1.png">
+
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap">
 <style>
 :root{
@@ -37,7 +44,6 @@ h1,h2,h3,.tab,.kpi b,.big b{font-family:'Outfit',sans-serif}
   .app{max-width:600px;padding:16px 16px 100px}
 }
 
-/* EN-TÊTE AVEC TITRE GRAND ET LUMINEUX */
 header{border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:flex-end}
 .header-left h1{font-size:26px;font-weight:800;color:var(--text);letter-spacing:-0.02em;margin-bottom:2px;background:linear-gradient(135deg, var(--text) 40%, var(--purple) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .sync-status{font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:500}
