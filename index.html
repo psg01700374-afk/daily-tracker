@@ -217,7 +217,10 @@ function dow(d) { return (d.getDay() + 6) % 7; }
 function loadData() {
   try {
     let s = localStorage.getItem(STORAGE_KEY);
-    if (s) { let parsed = JSON.parse(s); if (parsed && Array.isArray(parsed.habits)) return parsed; }
+    if (s) { 
+      let parsed = JSON.parse(s); 
+      if (parsed && Array.isArray(parsed.habits)) return parsed; 
+    }
   } catch(e) {}
   let t = key(new Date());
   return {
@@ -229,7 +232,14 @@ function loadData() {
     done: {}
   };
 }
-function saveData() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+
+function saveData() { 
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); 
+  } catch(e) {
+    console.error("Erreur lors de la sauvegarde :", e);
+  }
+}
 
 function activeOn(g, k) {
   return g.created <= k && (!g.ended || k < g.ended) && g.days.indexOf(dow(parseKey(k))) > -1;
@@ -263,13 +273,11 @@ function calcStreak() {
   return n;
 }
 
-// Calcul automatique des accomplissements mensuels basés sur les coches du mois en cours
 function calculateMonthlyProgress() {
   let now = new Date();
   let y = now.getFullYear();
   let m = now.getMonth();
   
-  // Parcourir tous les jours du mois en cours jusqu'à aujourd'hui
   let daysCount = now.getDate();
   let totalTarget = 0;
   let totalCurrent = 0;
@@ -368,9 +376,9 @@ function renderToday() {
   document.getElementById("list").innerHTML = s.t ? s.list.map(item => {
     let done = (state.done[vk] || []).indexOf(item.id) > -1;
     return '<div class="goal ' + (done ? "done" : "") + '">' +
-      '<button class="chk" data-chk="' + item.id + '">' + (done ? "V" : "") + '</button>' +
+      '<button class="chk" data-chk="' + item.id + '">' + (done ? "&#10003;" : "") + '</button>' +
       '<span class="name">' + item.name + '</span>' +
-      '<button class="del" data-del-item="' + item.id + '" data-type="' + item.type + '">X</button>' +
+      '<button class="del" data-del-item="' + item.id + '" data-type="' + item.type + '">&#10005;</button>' +
     '</div>';
   }).join("") : '<div class="empty">Aucune tache pour ce jour. Ajoutez-en une !</div>';
 
@@ -417,7 +425,7 @@ function renderHabits() {
   document.getElementById("habitsList").innerHTML = state.habits.length ? state.habits.map(g => 
     '<div class="goal">' +
       '<span class="name">' + g.name + ' (Objectif mois : ' + (g.monthlyTarget || 30) + ' j)</span>' +
-      '<button class="del" data-del-habit="' + g.id + '">X</button>' +
+      '<button class="del" data-del-habit="' + g.id + '">&#10005;</button>' +
     '</div>'
   ).join("") : '<div class="empty">Aucune habitude recurrente.</div>';
 }
@@ -426,6 +434,21 @@ document.getElementById("datePicker").addEventListener("change", e => {
   if(e.target.value) {
     viewingDate = parseKey(e.target.value);
     renderToday();
+  }
+});
+
+// ÉCOUTEURS D'ÉVÉNEMENTS POUR LA TOUCHE "ENTRÉE"
+document.getElementById("oneOffName").addEventListener("keydown", e => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    document.getElementById("addOneOffBtn").click();
+  }
+});
+
+document.getElementById("newHabitName").addEventListener("keydown", e => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    document.getElementById("addHabitBtn").click();
   }
 });
 
@@ -511,10 +534,6 @@ document.addEventListener("click", e => {
     }
   }
 });
-
-let now = new Date(), hr = now.getHours();
-let greeting = hr < 5 ? "Bonne nuit" : hr < 17 ? "Bonjour" : "Bonsoir";
-document.getElementById("greet").textContent = greeting;
 
 renderAll();
 </script>
