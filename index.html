@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Daily Tracker Pro</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap">
 <style>
 :root{
   --bg: #070913;
@@ -37,10 +37,11 @@ h1,h2,h3,.tab,.kpi b,.big b{font-family:'Outfit',sans-serif}
   .app{max-width:600px;padding:16px 16px 100px}
 }
 
-header{border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:flex-end}
-.header-left h1{font-size:16px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px}
-.sync-status{font-size:11px;color:var(--muted)}
-.date-title{font-size:18px;font-weight:700;display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:6px}
+/* EN-TÊTE AVEC TITRE GRAND ET LUMINEUX */
+header{border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:flex-end}
+.header-left h1{font-size:26px;font-weight:800;color:var(--text);letter-spacing:-0.02em;margin-bottom:2px;background:linear-gradient(135deg, var(--text) 40%, var(--purple) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sync-status{font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:500}
+.date-title{font-size:18px;font-weight:700;display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:4px}
 
 .header-right{display:flex;gap:8px;align-items:center}
 .icon-btn{border:1px solid var(--line);background:var(--card);color:var(--text);width:36px;height:36px;border-radius:10px;cursor:pointer;display:grid;place-items:center;font-size:14px;transition:0.2s}
@@ -127,7 +128,7 @@ header{border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:20p
     <button class="tab" data-t="settings"><span>⚙️</span><span>Paramètres</span></button>
   </div>
 
-  <!-- SECTION: TODAY & PLANNER (Tâches ponctuelles uniquement) -->
+  <!-- SECTION: TODAY & PLANNER -->
   <section id="sec-today">
     <div class="cols">
       <div>
@@ -157,7 +158,7 @@ header{border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:20p
     </div>
   </section>
 
-  <!-- SECTION: MONTHLY GOALS (Suivi + Ajout d'habitudes fixes) -->
+  <!-- SECTION: MONTHLY GOALS -->
   <section id="sec-monthly" class="hide">
     <div class="cols">
       <div>
