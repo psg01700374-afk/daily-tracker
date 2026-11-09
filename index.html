@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Daily Tracker Pro — Youssef Bousallam</title>
+<title>Daily Tracker Pro — Synchronisé</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap">
 <style>
 :root{
@@ -35,6 +35,7 @@ h1,h2,h3,.tab,.kpi b,.big b{font-family:'Outfit',sans-serif}
 
 header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:20px}
 h1{font-size:12px;font-weight:600;color:var(--purple);text-transform:uppercase;letter-spacing:0.15em}
+.sync-status{font-size:11px;color:var(--muted);margin-top:2px}
 .date-title{font-size:20px;font-weight:700;margin-top:4px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .icon-btn{border:1px solid var(--line);background:var(--card);color:var(--text);width:36px;height:36px;border-radius:8px;cursor:pointer;display:grid;place-items:center;font-size:14px;transition:0.2s}
 .icon-btn:hover{border-color:var(--accent)}
@@ -95,7 +96,8 @@ h1{font-size:12px;font-weight:600;color:var(--purple);text-transform:uppercase;l
 <div class="app">
   <header>
     <div>
-      <h1 id="appTitle">Daily Tracker Pro — Youssef Bousallam</h1>
+      <h1 id="appTitle">Daily Tracker Pro — Synchronisé</h1>
+      <div class="sync-status" id="syncStatus">Synchro Cloud : Prête</div>
       <div class="date-title">
         <button class="icon-btn" id="prevDay">&lt;</button>
         <span id="todayText"></span>
@@ -113,18 +115,17 @@ h1{font-size:12px;font-weight:600;color:var(--purple);text-transform:uppercase;l
     <button class="tab on" data-t="today">Aujourd'hui & Planning</button>
     <button class="tab" data-t="monthly">Objectifs Mensuels</button>
     <button class="tab" data-t="habits">Habitudes</button>
-    <button class="tab" data-t="settings">Parametres</button>
+    <button class="tab" data-t="settings">Paramètres</button>
   </div>
 
   <!-- SECTION: TODAY & PLANNER -->
   <section id="sec-today">
     <div class="status">
-      <div class="big"><b id="pct">0%</b><span id="msg">A executer</span></div>
-      <div class="meta"><span id="cnt">0 sur 0 objectifs</span><span class="chip" id="streak">Serie : 0 jour</span></div>
+      <div class="big"><b id="pct">0%</b><span id="msg">A exécuter</span></div>
+      <div class="meta"><span id="cnt">0 sur 0 objectifs</span><span class="chip" id="streak">Série : 0 jour</span></div>
       <div class="track"><i id="fg"></i></div>
     </div>
 
-    <!-- BARRE DE SUIVI MENSUEL SUR LA PAGE PRINCIPALE -->
     <div class="status" style="border-left-color: var(--purple); margin-top: 16px;">
       <div class="big"><b id="mainMonthlyPct" style="color: var(--purple);">0%</b><span style="color:var(--purple)">Objectifs Mensuels Fixes</span></div>
       <div class="meta"><span id="mainMonthlyText">Progression globale du mois</span></div>
@@ -137,18 +138,18 @@ h1{font-size:12px;font-weight:600;color:var(--purple);text-transform:uppercase;l
         <div class="card" id="list"></div>
       </div>
       <aside>
-        <div class="label">Ajouter une tache pour ce jour</div>
+        <div class="label">Ajouter une tâche pour ce jour</div>
         <div class="card add">
           <input id="oneOffName" placeholder="Ex: Assister au cours..." maxlength="60">
-          <button class="btn" id="addOneOffBtn">Ajouter a cette date</button>
+          <button class="btn" id="addOneOffBtn">Ajouter à cette date</button>
         </div>
 
-        <div class="label">Nouvelle habitude recurrente (Fixe)</div>
+        <div class="label">Nouvelle habitude récurrente (Fixe)</div>
         <div class="card add">
           <input id="newHabitName" placeholder="Ex: Lire le Coran" maxlength="60">
           <input id="habTarget" type="number" placeholder="Objectif jours/mois (ex: 30)" min="1" value="30" style="width:100%;border:1px solid var(--line);background:var(--secondary);color:var(--text);padding:12px 16px;border-radius:8px;font-size:14px;outline:none;margin-bottom:10px">
           <div class="days" id="dayPick"></div>
-          <button class="btn" id="addHabitBtn">Creer l'habitude fixe</button>
+          <button class="btn" id="addHabitBtn">Créer l'habitude fixe</button>
         </div>
       </aside>
     </div>
@@ -162,38 +163,46 @@ h1{font-size:12px;font-weight:600;color:var(--purple);text-transform:uppercase;l
       <div class="track"><i id="monthlyFg" style="background: var(--purple);"></i></div>
     </div>
 
-    <div class="label">Objectifs Fixes du Mois (Lies aux habitudes)</div>
+    <div class="label">Objectifs Fixes du Mois (Liés aux habitudes)</div>
     <div class="card"><div id="monthlyList"></div></div>
   </section>
 
   <!-- SECTION: HABITS MANAGER -->
   <section id="sec-habits" class="hide">
-    <div class="label">Gestion des habitudes recurrentes</div>
+    <div class="label">Gestion des habitudes récurrentes</div>
     <div class="card"><div id="habitsList"></div></div>
   </section>
 
   <!-- SECTION: SETTINGS -->
   <section id="sec-settings" class="hide">
-    <div class="label">Parametres & Donnees</div>
+    <div class="label">Paramètres & Clé Cloud</div>
     <div class="card" style="display:flex;flex-direction:column;gap:14px">
-      <p style="font-size:14px;color:var(--muted)">Vos donnees sont stockees localement en toute securite.</p>
-      <button class="btn" id="exportBtn">Exporter mes donnees (JSON)</button>
-      <button class="btn" style="background:var(--secondary);color:var(--accent);border:1px solid var(--line)" id="resetBtn">Reinitialiser</button>
+      <p style="font-size:14px;color:var(--muted)">Votre Master Key JSONBin.io (nécessaire pour l'écriture) :</p>
+      <input id="cfgApiKey" type="password" placeholder="Votre Master Key ($2b$...)" style="padding:10px;border-radius:8px;border:1px solid var(--line);background:var(--secondary);color:var(--text)">
+      <button class="btn" id="saveKeyBtn">Enregistrer la clé & Forcer la synchro</button>
+      <hr style="border-color:var(--line);margin:8px 0">
+      <button class="btn" id="exportBtn">Exporter mes données (JSON)</button>
+      <button class="btn" style="background:var(--secondary);color:var(--accent);border:1px solid var(--line)" id="resetBtn">Réinitialiser</button>
     </div>
   </section>
 </div>
 
 <script>
+const JSONBIN_BIN_ID = "6af2218fffd5d16053b48c45";
+let JSONBIN_API_KEY = localStorage.getItem("jsonbin_api_key") || "";
+
 const STORAGE_KEY = "daily_tracker_pro_v6";
 const DN = ["L", "M", "M", "J", "V", "S", "D"];
 const DAYS7 = [0, 1, 2, 3, 4, 5, 6];
 
-let state = loadData();
+let state = loadLocalData();
 let currentTab = "today";
 let draftDays = DAYS7.slice();
-
 let viewingDate = new Date();
+
 function getViewingKey() { return key(viewingDate); }
+
+document.getElementById("cfgApiKey").value = JSONBIN_API_KEY;
 
 let savedTheme = localStorage.getItem("daily_tracker_theme") || "dark";
 if (savedTheme === "light") { document.documentElement.setAttribute("data-theme", "light"); }
@@ -214,7 +223,15 @@ function key(d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padSta
 function parseKey(k) { var a = k.split("-"); return new Date(+a[0], +a[1] - 1, +a[2]); }
 function dow(d) { return (d.getDay() + 6) % 7; }
 
-function loadData() {
+function setSyncStatus(msg, isError = false) {
+  const el = document.getElementById("syncStatus");
+  if (el) {
+    el.textContent = msg;
+    el.style.color = isError ? "#EF4444" : "var(--muted)";
+  }
+}
+
+function loadLocalData() {
   try {
     let s = localStorage.getItem(STORAGE_KEY);
     if (s) { 
@@ -233,11 +250,54 @@ function loadData() {
   };
 }
 
-function saveData() { 
+async function saveData() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  
+  if (!JSONBIN_API_KEY) {
+    setSyncStatus("Clé API manquante (Mode local uniquement)");
+    return;
+  }
+
+  setSyncStatus("Envoi au Cloud...");
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); 
-  } catch(e) {
-    console.error("Erreur lors de la sauvegarde :", e);
+    const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Master-Key": JSONBIN_API_KEY
+      },
+      body: JSON.stringify(state)
+    });
+    if (res.ok) {
+      setSyncStatus("Synchronisé avec le Cloud ✓");
+    } else {
+      setSyncStatus("Erreur d'écriture Cloud", true);
+    }
+  } catch (err) {
+    setSyncStatus("Hors ligne (Sauvegardé en local)", true);
+  }
+}
+
+async function fetchCloudData() {
+  setSyncStatus("Chargement du Cloud...");
+  try {
+    const headers = {};
+    if (JSONBIN_API_KEY) headers["X-Master-Key"] = JSONBIN_API_KEY;
+
+    const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, { headers });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.record && Array.isArray(data.record.habits)) {
+        state = data.record;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        renderAll();
+        setSyncStatus("Synchronisé avec le Cloud ✓");
+      }
+    } else {
+      setSyncStatus("Données locales (Bin vide ou clé requise)", true);
+    }
+  } catch (err) {
+    setSyncStatus("Mode hors ligne actif", true);
   }
 }
 
@@ -359,11 +419,11 @@ function renderToday() {
 
   document.getElementById("fg").style.width = p + "%";
   document.getElementById("pct").textContent = p + "%";
-  document.getElementById("cnt").textContent = s.t ? s.t + " elements programmes" : "Rien de prevu ce jour";
-  document.getElementById("msg").textContent = p === 100 ? "Journee accomplie" : p > 0 ? "En cours" : "A executer";
+  document.getElementById("cnt").textContent = s.t ? s.t + " éléments programmés" : "Rien de prévu ce jour";
+  document.getElementById("msg").textContent = p === 100 ? "Journée accomplie" : p > 0 ? "En cours" : "À exécuter";
   
   let st = calcStreak();
-  document.getElementById("streak").textContent = "Serie : " + st + (st > 1 ? " jours" : " jour");
+  document.getElementById("streak").textContent = "Série : " + st + (st > 1 ? " jours" : " jour");
 
   renderWeekStrip();
   document.getElementById("datePicker").value = vk;
@@ -371,7 +431,7 @@ function renderToday() {
   let dateText = viewingDate.toLocaleDateString("fr-FR", {weekday:"long", day:"numeric", month:"long"});
   if(vk === todayKey) dateText = "Aujourd'hui";
   document.getElementById("todayText").textContent = dateText.charAt(0).toUpperCase() + dateText.slice(1);
-  document.getElementById("listLabel").textContent = "Objectifs & Taches (" + viewingDate.toLocaleDateString("fr-FR", {day:"numeric", month:"short"}) + ")";
+  document.getElementById("listLabel").textContent = "Objectifs & Tâches (" + viewingDate.toLocaleDateString("fr-FR", {day:"numeric", month:"short"}) + ")";
 
   document.getElementById("list").innerHTML = s.t ? s.list.map(item => {
     let done = (state.done[vk] || []).indexOf(item.id) > -1;
@@ -380,7 +440,7 @@ function renderToday() {
       '<span class="name">' + item.name + '</span>' +
       '<button class="del" data-del-item="' + item.id + '" data-type="' + item.type + '">&#10005;</button>' +
     '</div>';
-  }).join("") : '<div class="empty">Aucune tache pour ce jour. Ajoutez-en une !</div>';
+  }).join("") : '<div class="empty">Aucune tâche pour ce jour. Ajoutez-en une !</div>';
 
   document.getElementById("dayPick").innerHTML = DN.map((x, i) => '<button type="button" class="day ' + (draftDays.includes(i) ? "on" : "") + '" data-day="' + i + '">' + x + '</button>').join("");
 }
@@ -393,7 +453,7 @@ function renderMonthly() {
   let daysCount = now.getDate();
 
   if (!state.habits || state.habits.length === 0) {
-    listEl.innerHTML = '<div class="empty">Aucune habitude fixe definie.</div>';
+    listEl.innerHTML = '<div class="empty">Aucune habitude fixe définie.</div>';
     return;
   }
 
@@ -414,7 +474,7 @@ function renderMonthly() {
     return '<div class="monthly-item">' +
       '<div>' +
         '<div style="font-weight:600; font-size:16px">' + h.name + '</div>' +
-        '<div style="font-size:12px; color:var(--muted)">Realise ce mois : <b>' + currentDone + '</b> / ' + target + ' jours (' + hPct + '%)</div>' +
+        '<div style="font-size:12px; color:var(--muted)">Réalisé ce mois : <b>' + currentDone + '</b> / ' + target + ' jours (' + hPct + '%)</div>' +
       '</div>' +
       '<div style="font-family:Outfit; font-size:18px; font-weight:700; color:var(--purple)">' + hPct + '%</div>' +
     '</div>';
@@ -427,8 +487,14 @@ function renderHabits() {
       '<span class="name">' + g.name + ' (Objectif mois : ' + (g.monthlyTarget || 30) + ' j)</span>' +
       '<button class="del" data-del-habit="' + g.id + '">&#10005;</button>' +
     '</div>'
-  ).join("") : '<div class="empty">Aucune habitude recurrente.</div>';
+  ).join("") : '<div class="empty">Aucune habitude récurrente.</div>';
 }
+
+document.getElementById("saveKeyBtn").addEventListener("click", () => {
+  JSONBIN_API_KEY = document.getElementById("cfgApiKey").value.trim();
+  localStorage.setItem("jsonbin_api_key", JSONBIN_API_KEY);
+  fetchCloudData();
+});
 
 document.getElementById("datePicker").addEventListener("change", e => {
   if(e.target.value) {
@@ -437,7 +503,7 @@ document.getElementById("datePicker").addEventListener("change", e => {
   }
 });
 
-// ÉCOUTEURS D'ÉVÉNEMENTS POUR LA TOUCHE "ENTRÉE"
+// Touche Entrée pour valider les champs de texte
 document.getElementById("oneOffName").addEventListener("keydown", e => {
   if (e.key === "Enter") {
     e.preventDefault();
@@ -529,13 +595,14 @@ document.addEventListener("click", e => {
   else if (t.id === "resetBtn") {
     if (confirm("Tout effacer ?")) {
       localStorage.removeItem(STORAGE_KEY);
-      state = loadData();
+      state = loadLocalData();
       renderAll();
     }
   }
 });
 
 renderAll();
+fetchCloudData();
 </script>
 </body>
 </html>
