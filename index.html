@@ -41,7 +41,8 @@ h1,h2,h3,.tab,.kpi b,.big b{font-family:'Outfit',sans-serif}
 
 .app{max-width:980px;margin:0 auto;padding:24px 20px}
 @media(max-width:768px){
-  .app{max-width:600px;padding:16px 16px 100px}
+  /* Correction de l'espace en haut pour éviter la superposition avec l'encoche de l'iPhone */
+  .app{max-width:600px;padding:calc(16px + env(safe-area-inset-top)) 16px 100px 16px}
 }
 
 header{border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:flex-end}
@@ -111,7 +112,7 @@ header{border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:20p
   <header>
     <div class="header-left">
       <h1>Daily Tracker Pro</h1>
-      <div class="sync-status" id="syncStatus">Cloud : Connecté</div>
+      <div class="sync-status" id="syncStatus">Connexion Cloud...</div>
       <div class="date-title">
         <button class="icon-btn" id="prevDay">&lt;</button>
         <span id="todayText"></span>
@@ -275,7 +276,7 @@ function loadLocalData() {
 
 async function saveData() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  if (!JSONBIN_API_KEY) { setSyncStatus("Mode local"); return; }
+  if (!JSONBIN_API_KEY) { setSyncStatus("Mode local (Clé manquante)"); return; }
 
   setSyncStatus("Synchro...");
   try {
@@ -290,7 +291,7 @@ async function saveData() {
 }
 
 async function fetchCloudData() {
-  setSyncStatus("Chargement...");
+  setSyncStatus("Chargement Cloud...");
   try {
     const headers = {};
     if (JSONBIN_API_KEY) headers["X-Master-Key"] = JSONBIN_API_KEY;
@@ -303,6 +304,8 @@ async function fetchCloudData() {
         renderAll();
         setSyncStatus("Cloud synchro ✓");
       }
+    } else {
+      setSyncStatus("Mode local (Vérifiez la Master Key)", true);
     }
   } catch (err) { setSyncStatus("Mode local actif", true); }
 }
