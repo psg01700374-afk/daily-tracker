@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Daily Tracker Pro — Youssef Bousallam</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap">
+<style>
+:root{
+  --bg: #090B16;
+  --card: #111529;
+  --secondary: #151A31;
+  --accent: #22D3EE;
+  --purple: #8B5CF6;
+  --text: #EEF0FF;
+  --muted: #9298B8;
+  --line: #222B48;
+  --on: #090B16;
+}
+[data-theme="light"]{
+  --bg: #F4F5F7;
+  --card: #FFFFFF;
+  --secondary: #E5E7EB;
+  --accent: #0EA5E9;
+  --purple: #7C3AED;
+  --text: #1F2937;
+  --muted: #6B7280;
+  --line: #E5E7EB;
+  --on: #FFFFFF;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh;padding-bottom:80px;transition:background 0.3s, color 0.3s}
+h1,h2,h3,.tab,.kpi b,.big b{font-family:'Outfit',sans-serif}
+.app{max-width:980px;margin:0 auto;padding:26px 20px}
+
+header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:20px}
+h1{font-size:12px;font-weight:600;color:var(--purple);text-transform:uppercase;letter-spacing:0.15em}
+.date-title{font-size:20px;font-weight:700;margin-top:4px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.icon-btn{border:1px solid var(--line);background:var(--card);color:var(--text);width:36px;height:36px;border-radius:8px;cursor:pointer;display:grid;place-items:center;font-size:14px;transition:0.2s}
+.icon-btn:hover{border-color:var(--accent)}
+
+.week-strip-nav{display:grid;grid-template-columns:repeat(7, 1fr);gap:6px;margin-bottom:16px}
+.week-day-btn{background:var(--secondary);border:1px solid var(--line);color:var(--muted);padding:8px 0;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;text-align:center;transition:0.2s}
+.week-day-btn:hover{border-color:var(--accent);color:var(--text)}
+.week-day-btn.active{background:var(--accent);color:var(--on);border-color:var(--accent)}
+
+.tabs{display:flex;gap:26px;border-bottom:1px solid var(--line);margin-bottom:22px;overflow-x:auto}
+.tab{border:0;border-bottom:2px solid transparent;margin-bottom:-1px;background:none;color:var(--muted);font-size:14px;font-weight:600;text-transform:uppercase;padding:16px 0 13px;cursor:pointer;white-space:nowrap}
+.tab.on{color:var(--accent);border-bottom-color:var(--accent)}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:22px;margin-bottom:16px}
+.status{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:26px;margin-bottom:22px;border-left:4px solid var(--accent)}
+.big{display:flex;align-items:baseline;gap:18px}
+.big b{font-size:54px;font-weight:700;line-height:1;color:var(--accent)}
+.big span{font-size:15px;font-weight:600;text-transform:uppercase;color:var(--muted)}
+.meta{display:flex;justify-content:space-between;align-items:center;margin:16px 0 18px;font-size:14px;color:var(--muted)}
+.chip{display:inline-block;border:1px solid var(--purple);color:var(--purple);background:rgba(139,92,246,0.1);padding:6px 12px;border-radius:6px;font-size:12px;font-weight:600}
+.track{height:6px;background:var(--secondary);border-radius:3px;overflow:hidden}
+.track i{display:block;height:100%;width:0;background:var(--accent);transition:width 0.6s}
+
+.cols{display:grid;grid-template-columns:1.6fr 1fr;gap:22px}
+@media(max-width:768px){.cols{grid-template-columns:1fr}}
+
+.label{font-size:11px;text-transform:uppercase;letter-spacing:0.2em;color:var(--muted);margin-bottom:10px;font-weight:600}
+.goal{display:flex;align-items:center;gap:16px;padding:14px 0;border-bottom:1px solid var(--line)}
+.chk{width:28px;height:28px;border-radius:6px;border:2px solid var(--muted);background:none;cursor:pointer;display:grid;place-items:center;color:var(--bg);font-weight:700;transition:0.2s}
+.goal.done .chk{background:var(--accent);border-color:var(--accent);color:var(--on)}
+.goal .name{flex:1;font-weight:500;font-size:15px}
+.goal.done .name{color:var(--muted);text-decoration:line-through}
+.del{border:0;background:none;color:var(--muted);cursor:pointer;font-size:14px;padding:6px;transition:0.2s}
+.del:hover{color:var(--accent)}
+
+.add input{width:100%;border:1px solid var(--line);background:var(--secondary);color:var(--text);padding:12px 16px;border-radius:8px;font-size:14px;outline:none;margin-bottom:10px}
+.days{display:flex;gap:4px;margin-bottom:12px}
+.day{flex:1;border:1px solid var(--line);background:var(--secondary);color:var(--muted);padding:8px 0;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;text-align:center}
+.day.on{background:var(--accent);color:var(--on);border-color:var(--accent)}
+
+.btn{width:100%;border:0;background:var(--accent);color:var(--on);padding:14px;border-radius:8px;font-size:13px;font-weight:700;text-transform:uppercase;cursor:pointer;transition:0.2s}
+.btn:hover{opacity:0.9}
+
+.monthly-item{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}
+.monthly-item:last-child{border-bottom:0}
+
+.hide{display:none}
+
+@media(max-width:480px){
+  body{padding-bottom:90px}
+  .tabs{position:fixed;left:0;right:0;bottom:0;z-index:50;background:var(--card);border-top:1px solid var(--line);padding:0 4px}
+  .tab{flex:1;text-align:center;padding:14px 0;font-size:10px}
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header>
+    <div>
+      <h1 id="appTitle">Daily Tracker Pro — Youssef Bousallam</h1>
+      <div class="date-title">
+        <button class="icon-btn" id="prevDay">&lt;</button>
+        <span id="todayText"></span>
+        <button class="icon-btn" id="nextDay">&gt;</button>
+        <button class="icon-btn" id="todayReset" style="font-size:11px;padding:0 8px;width:auto">Aujourd'hui</button>
+        <input type="date" id="datePicker" style="background:var(--secondary);border:1px solid var(--line);color:var(--text);padding:6px;border-radius:8px;font-size:12px;cursor:pointer">
+      </div>
+    </div>
+    <button class="icon-btn" id="themeBtn" aria-label="Theme">&#9680;</button>
+  </header>
+
+  <div class="week-strip-nav" id="weekStrip"></div>
+
+  <div class="tabs">
+    <button class="tab on" data-t="today">Aujourd'hui & Planning</button>
+    <button class="tab" data-t="monthly">Objectifs Mensuels</button>
+    <button class="tab" data-t="habits">Habitudes</button>
+    <button class="tab" data-t="settings">Parametres</button>
+  </div>
+
+  <!-- SECTION: TODAY & PLANNER -->
+  <section id="sec-today">
+    <div class="status">
+      <div class="big"><b id="pct">0%</b><span id="msg">A executer</span></div>
+      <div class="meta"><span id="cnt">0 sur 0 objectifs</span><span class="chip" id="streak">Serie : 0 jour</span></div>
+      <div class="track"><i id="fg"></i></div>
+    </div>
+
+    <!-- BARRE DE SUIVI MENSUEL SUR LA PAGE PRINCIPALE -->
+    <div class="status" style="border-left-color: var(--purple); margin-top: 16px;">
+      <div class="big"><b id="mainMonthlyPct" style="color: var(--purple);">0%</b><span style="color:var(--purple)">Objectifs Mensuels Fixes</span></div>
+      <div class="meta"><span id="mainMonthlyText">Progression globale du mois</span></div>
+      <div class="track"><i id="mainMonthlyFg" style="background: var(--purple);"></i></div>
+    </div>
+
+    <div class="cols" style="margin-top: 16px;">
+      <div>
+        <div class="label" id="listLabel">Objectifs du jour</div>
+        <div class="card" id="list"></div>
+      </div>
+      <aside>
+        <div class="label">Ajouter une tache pour ce jour</div>
+        <div class="card add">
+          <input id="oneOffName" placeholder="Ex: Assister au cours..." maxlength="60">
+          <button class="btn" id="addOneOffBtn">Ajouter a cette date</button>
+        </div>
+
+        <div class="label">Nouvelle habitude recurrente (Fixe)</div>
+        <div class="card add">
+          <input id="newHabitName" placeholder="Ex: Lire le Coran" maxlength="60">
+          <input id="habTarget" type="number" placeholder="Objectif jours/mois (ex: 30)" min="1" value="30" style="width:100%;border:1px solid var(--line);background:var(--secondary);color:var(--text);padding:12px 16px;border-radius:8px;font-size:14px;outline:none;margin-bottom:10px">
+          <div class="days" id="dayPick"></div>
+          <button class="btn" id="addHabitBtn">Creer l'habitude fixe</button>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- SECTION: MONTHLY GOALS -->
+  <section id="sec-monthly" class="hide">
+    <div class="status" style="border-left-color: var(--purple);">
+      <div class="big"><b id="monthlyPct">0%</b><span style="color:var(--purple)">Progression Mensuelle Globale</span></div>
+      <div class="meta"><span>Suivi de vos grands objectifs fixes du mois</span></div>
+      <div class="track"><i id="monthlyFg" style="background: var(--purple);"></i></div>
+    </div>
+
+    <div class="label">Objectifs Fixes du Mois (Lies aux habitudes)</div>
+    <div class="card"><div id="monthlyList"></div></div>
+  </section>
+
+  <!-- SECTION: HABITS MANAGER -->
+  <section id="sec-habits" class="hide">
+    <div class="label">Gestion des habitudes recurrentes</div>
+    <div class="card"><div id="habitsList"></div></div>
+  </section>
+
+  <!-- SECTION: SETTINGS -->
+  <section id="sec-settings" class="hide">
+    <div class="label">Parametres & Donnees</div>
+    <div class="card" style="display:flex;flex-direction:column;gap:14px">
+      <p style="font-size:14px;color:var(--muted)">Vos donnees sont stockees localement en toute securite.</p>
+      <button class="btn" id="exportBtn">Exporter mes donnees (JSON)</button>
+      <button class="btn" style="background:var(--secondary);color:var(--accent);border:1px solid var(--line)" id="resetBtn">Reinitialiser</button>
+    </div>
+  </section>
+</div>
+
+<script>
+const STORAGE_KEY = "daily_tracker_pro_v6";
+const DN = ["L", "M", "M", "J", "V", "S", "D"];
+const DAYS7 = [0, 1, 2, 3, 4, 5, 6];
+
+let state = loadData();
+let currentTab = "today";
+let draftDays = DAYS7.slice();
+
+let viewingDate = new Date();
+function getViewingKey() { return key(viewingDate); }
+
+let savedTheme = localStorage.getItem("daily_tracker_theme") || "dark";
+if (savedTheme === "light") { document.documentElement.setAttribute("data-theme", "light"); }
+
+document.getElementById("themeBtn").addEventListener("click", () => {
+  let current = document.documentElement.getAttribute("data-theme");
+  if (current === "light") {
+    document.documentElement.removeAttribute("data-theme");
+    localStorage.setItem("daily_tracker_theme", "dark");
+  } else {
+    document.documentElement.setAttribute("data-theme", "light");
+    localStorage.setItem("daily_tracker_theme", "light");
+  }
+});
+
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+function key(d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+function parseKey(k) { var a = k.split("-"); return new Date(+a[0], +a[1] - 1, +a[2]); }
+function dow(d) { return (d.getDay() + 6) % 7; }
+
+function loadData() {
+  try {
+    let s = localStorage.getItem(STORAGE_KEY);
+    if (s) { let parsed = JSON.parse(s); if (parsed && Array.isArray(parsed.habits)) return parsed; }
+  } catch(e) {}
+  let t = key(new Date());
+  return {
+    habits: [
+      { id: "h1", name: "Lire le Coran", days: DAYS7.slice(), created: t, monthlyTarget: 30 },
+      { id: "h2", name: "Faire du sport", days: DAYS7.slice(), created: t, monthlyTarget: 12 }
+    ],
+    oneOffTasks: [],
+    done: {}
+  };
+}
+function saveData() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+
+function activeOn(g, k) {
+  return g.created <= k && (!g.ended || k < g.ended) && g.days.indexOf(dow(parseKey(k))) > -1;
+}
+
+function getStats(k) {
+  let vk = k;
+  let recurring = state.habits.filter(g => activeOn(g, vk));
+  let oneOff = (state.oneOffTasks || []).filter(t => t.date === vk);
+  
+  let totalList = [
+    ...recurring.map(h => ({ id: h.id, name: h.name, type: 'recurring' })),
+    ...oneOff.map(t => ({ id: t.id, name: t.name, type: 'oneoff' }))
+  ];
+
+  let dn = state.done[vk] || [];
+  let dCount = totalList.filter(item => dn.indexOf(item.id) > -1).length;
+  return { list: totalList, t: totalList.length, d: dCount, p: totalList.length ? dCount / totalList.length : null };
+}
+
+function calcStreak() {
+  let d = new Date(), n = 0, first = true;
+  for (let i = 0; i < 365; i++) {
+    let s = getStats(key(d));
+    if (s.p === null) {}
+    else if (s.p === 1) { n++; }
+    else if (!(first && i === 0)) { break; }
+    first = false;
+    d.setDate(d.getDate() - 1);
+  }
+  return n;
+}
+
+// Calcul automatique des accomplissements mensuels basés sur les coches du mois en cours
+function calculateMonthlyProgress() {
+  let now = new Date();
+  let y = now.getFullYear();
+  let m = now.getMonth();
+  
+  // Parcourir tous les jours du mois en cours jusqu'à aujourd'hui
+  let daysCount = now.getDate();
+  let totalTarget = 0;
+  let totalCurrent = 0;
+
+  state.habits.forEach(h => {
+    let target = h.monthlyTarget || 30;
+    totalTarget += target;
+    
+    let currentDone = 0;
+    for(let d = 1; d <= daysCount; d++) {
+      let checkDate = new Date(y, m, d);
+      let k = key(checkDate);
+      if (activeOn(h, k)) {
+        if (state.done[k] && state.done[k].includes(h.id)) {
+          currentDone++;
+        }
+      }
+    }
+    totalCurrent += Math.min(currentDone, target);
+  });
+
+  let pct = totalTarget > 0 ? Math.round((totalCurrent / totalTarget) * 100) : 0;
+  return { pct, totalCurrent, totalTarget };
+}
+
+function updateMonthlyProgressDisplay() {
+  let res = calculateMonthlyProgress();
+  
+  document.getElementById("mainMonthlyPct").textContent = res.pct + "%";
+  document.getElementById("mainMonthlyFg").style.width = res.pct + "%";
+  document.getElementById("mainMonthlyText").textContent = res.totalCurrent + " / " + res.totalTarget + " accomplis ce mois-ci";
+
+  let monthlyPctEl = document.getElementById("monthlyPct");
+  let monthlyFgEl = document.getElementById("monthlyFg");
+  if(monthlyPctEl) monthlyPctEl.textContent = res.pct + "%";
+  if(monthlyFgEl) monthlyFgEl.style.width = res.pct + "%";
+}
+
+function renderAll() {
+  ["today", "monthly", "habits", "settings"].forEach(t => {
+    let el = document.getElementById("sec-" + t);
+    if(el) el.classList.toggle("hide", t !== currentTab);
+  });
+  document.querySelectorAll(".tab").forEach(b => {
+    b.classList.toggle("on", b.dataset.t === currentTab);
+  });
+
+  updateMonthlyProgressDisplay();
+
+  if (currentTab === "today") renderToday();
+  else if (currentTab === "monthly") renderMonthly();
+  else if (currentTab === "habits") renderHabits();
+}
+
+function renderWeekStrip() {
+  let stripEl = document.getElementById("weekStrip");
+  let d = new Date(viewingDate);
+  let currentDow = dow(d);
+  let monday = new Date(d);
+  monday.setDate(d.getDate() - currentDow);
+
+  let html = "";
+  for(let i=0; i<7; i++) {
+    let targetD = new Date(monday);
+    targetD.setDate(monday.getDate() + i);
+    let k = key(targetD);
+    let isActive = k === getViewingKey();
+    let dayLabel = DN[i] + " " + targetD.getDate();
+    html += '<button class="week-day-btn ' + (isActive ? 'active' : '') + '" data-select-date="' + k + '">' + dayLabel + '</button>';
+  }
+  stripEl.innerHTML = html;
+}
+
+function renderToday() {
+  let vk = getViewingKey();
+  let todayKey = key(new Date());
+  let s = getStats(vk);
+  let p = Math.round((s.p || 0) * 100);
+
+  document.getElementById("fg").style.width = p + "%";
+  document.getElementById("pct").textContent = p + "%";
+  document.getElementById("cnt").textContent = s.t ? s.t + " elements programmes" : "Rien de prevu ce jour";
+  document.getElementById("msg").textContent = p === 100 ? "Journee accomplie" : p > 0 ? "En cours" : "A executer";
+  
+  let st = calcStreak();
+  document.getElementById("streak").textContent = "Serie : " + st + (st > 1 ? " jours" : " jour");
+
+  renderWeekStrip();
+  document.getElementById("datePicker").value = vk;
+
+  let dateText = viewingDate.toLocaleDateString("fr-FR", {weekday:"long", day:"numeric", month:"long"});
+  if(vk === todayKey) dateText = "Aujourd'hui";
+  document.getElementById("todayText").textContent = dateText.charAt(0).toUpperCase() + dateText.slice(1);
+  document.getElementById("listLabel").textContent = "Objectifs & Taches (" + viewingDate.toLocaleDateString("fr-FR", {day:"numeric", month:"short"}) + ")";
+
+  document.getElementById("list").innerHTML = s.t ? s.list.map(item => {
+    let done = (state.done[vk] || []).indexOf(item.id) > -1;
+    return '<div class="goal ' + (done ? "done" : "") + '">' +
+      '<button class="chk" data-chk="' + item.id + '">' + (done ? "V" : "") + '</button>' +
+      '<span class="name">' + item.name + '</span>' +
+      '<button class="del" data-del-item="' + item.id + '" data-type="' + item.type + '">X</button>' +
+    '</div>';
+  }).join("") : '<div class="empty">Aucune tache pour ce jour. Ajoutez-en une !</div>';
+
+  document.getElementById("dayPick").innerHTML = DN.map((x, i) => '<button type="button" class="day ' + (draftDays.includes(i) ? "on" : "") + '" data-day="' + i + '">' + x + '</button>').join("");
+}
+
+function renderMonthly() {
+  let listEl = document.getElementById("monthlyList");
+  let now = new Date();
+  let y = now.getFullYear();
+  let m = now.getMonth();
+  let daysCount = now.getDate();
+
+  if (!state.habits || state.habits.length === 0) {
+    listEl.innerHTML = '<div class="empty">Aucune habitude fixe definie.</div>';
+    return;
+  }
+
+  listEl.innerHTML = state.habits.map(h => {
+    let target = h.monthlyTarget || 30;
+    let currentDone = 0;
+    for(let d = 1; d <= daysCount; d++) {
+      let checkDate = new Date(y, m, d);
+      let k = key(checkDate);
+      if (activeOn(h, k)) {
+        if (state.done[k] && state.done[k].includes(h.id)) {
+          currentDone++;
+        }
+      }
+    }
+    let hPct = Math.round((currentDone / target) * 100);
+
+    return '<div class="monthly-item">' +
+      '<div>' +
+        '<div style="font-weight:600; font-size:16px">' + h.name + '</div>' +
+        '<div style="font-size:12px; color:var(--muted)">Realise ce mois : <b>' + currentDone + '</b> / ' + target + ' jours (' + hPct + '%)</div>' +
+      '</div>' +
+      '<div style="font-family:Outfit; font-size:18px; font-weight:700; color:var(--purple)">' + hPct + '%</div>' +
+    '</div>';
+  }).join("");
+}
+
+function renderHabits() {
+  document.getElementById("habitsList").innerHTML = state.habits.length ? state.habits.map(g => 
+    '<div class="goal">' +
+      '<span class="name">' + g.name + ' (Objectif mois : ' + (g.monthlyTarget || 30) + ' j)</span>' +
+      '<button class="del" data-del-habit="' + g.id + '">X</button>' +
+    '</div>'
+  ).join("") : '<div class="empty">Aucune habitude recurrente.</div>';
+}
+
+document.getElementById("datePicker").addEventListener("change", e => {
+  if(e.target.value) {
+    viewingDate = parseKey(e.target.value);
+    renderToday();
+  }
+});
+
+document.addEventListener("click", e => {
+  let t = e.target.closest("button");
+  if (!t) return;
+  let vk = getViewingKey();
+
+  if (t.dataset.t) { 
+    currentTab = t.dataset.t; 
+    renderAll(); 
+  }
+  else if (t.dataset.selectDate) {
+    viewingDate = parseKey(t.dataset.selectDate);
+    renderToday();
+  }
+  else if (t.id === "prevDay") {
+    viewingDate.setDate(viewingDate.getDate() - 1);
+    renderToday();
+  }
+  else if (t.id === "nextDay") {
+    viewingDate.setDate(viewingDate.getDate() + 1);
+    renderToday();
+  }
+  else if (t.id === "todayReset") {
+    viewingDate = new Date();
+    renderToday();
+  }
+  else if (t.dataset.chk) {
+    let id = t.dataset.chk, dn = state.done[vk] || (state.done[vk] = []);
+    let idx = dn.indexOf(id);
+    if (idx > -1) dn.splice(idx, 1); else dn.push(id);
+    saveData(); renderAll();
+  }
+  else if (t.dataset.delItem) {
+    let id = t.dataset.delItem;
+    let type = t.dataset.type;
+    if (type === 'oneoff') {
+      state.oneOffTasks = state.oneOffTasks.filter(x => x.id !== id);
+    } else {
+      if(!confirm("Supprimer cette habitude fixe ?")) return;
+      state.habits = state.habits.filter(x => x.id !== id);
+    }
+    saveData(); renderAll();
+  }
+  else if (t.dataset.delHabit) {
+    if(!confirm("Supprimer cette habitude ?")) return;
+    state.habits = state.habits.filter(x => x.id !== t.dataset.delHabit);
+    saveData(); renderAll();
+  }
+  else if (t.dataset.day !== undefined) {
+    let d = +t.dataset.day, idx = draftDays.indexOf(d);
+    if (idx > -1) draftDays.splice(idx, 1); else draftDays.push(d);
+    draftDays.sort();
+    renderToday();
+  }
+  else if (t.id === "addOneOffBtn") {
+    let name = document.getElementById("oneOffName").value.trim();
+    if (!name) return;
+    if (!state.oneOffTasks) state.oneOffTasks = [];
+    state.oneOffTasks.push({ id: uid(), date: vk, name: name, completed: false });
+    document.getElementById("oneOffName").value = "";
+    saveData(); renderToday();
+  }
+  else if (t.id === "addHabitBtn") {
+    let name = document.getElementById("newHabitName").value.trim();
+    let target = +document.getElementById("habTarget").value || 30;
+    if (!name || !draftDays.length) return;
+    state.habits.push({ id: uid(), name, days: draftDays.slice(), created: vk, monthlyTarget: target });
+    document.getElementById("newHabitName").value = "";
+    saveData(); renderToday();
+  }
+  else if (t.id === "exportBtn") {
+    let blob = new Blob([JSON.stringify(state, null, 2)], {type: "application/json"});
+    let a = document.createElement("a"); a.href = URL.createObjectURL(blob);
+    a.download = "daily-tracker-backup.json"; a.click();
+  }
+  else if (t.id === "resetBtn") {
+    if (confirm("Tout effacer ?")) {
+      localStorage.removeItem(STORAGE_KEY);
+      state = loadData();
+      renderAll();
+    }
+  }
+});
+
+let now = new Date(), hr = now.getHours();
+let greeting = hr < 5 ? "Bonne nuit" : hr < 17 ? "Bonjour" : "Bonsoir";
+document.getElementById("greet").textContent = greeting;
+
+renderAll();
+</script>
+</body>
+</html>
