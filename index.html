@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Daily Tracker Pro — Mobile</title>
+<title>Daily Tracker Pro</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap">
 <style>
 :root{
@@ -29,49 +29,58 @@
   --on: #FFFFFF;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh;padding-bottom:110px;transition:background 0.3s, color 0.3s}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh;padding-bottom:30px;transition:background 0.3s, color 0.3s}
 h1,h2,h3,.tab,.kpi b,.big b{font-family:'Outfit',sans-serif}
 
-.app{max-width:600px;margin:0 auto;padding:16px 16px 30px}
+.app{max-width:980px;margin:0 auto;padding:24px 20px}
+@media(max-width:768px){
+  .app{max-width:600px;padding:16px 16px 100px}
+}
 
-/* En-tête centré et titre agrandi */
-header{border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:16px;text-align:center;position:relative}
-h1{font-size:18px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px}
-.sync-status{font-size:10px;color:var(--muted);margin-bottom:10px}
+header{border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:flex-end}
+.header-left h1{font-size:16px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px}
+.sync-status{font-size:11px;color:var(--muted)}
+.date-title{font-size:18px;font-weight:700;display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:6px}
 
-.header-top{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
-.date-title{font-size:17px;font-weight:700;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-
-.icon-btn{border:1px solid var(--line);background:var(--card);color:var(--text);width:34px;height:34px;border-radius:10px;cursor:pointer;display:grid;place-items:center;font-size:13px;transition:0.2s}
+.header-right{display:flex;gap:8px;align-items:center}
+.icon-btn{border:1px solid var(--line);background:var(--card);color:var(--text);width:36px;height:36px;border-radius:10px;cursor:pointer;display:grid;place-items:center;font-size:14px;transition:0.2s}
 .icon-btn:active{transform:scale(0.92)}
 
-/* Semainier mobile compact et ergonomique */
-.week-strip-nav{display:grid;grid-template-columns:repeat(7, 1fr);gap:4px;margin-bottom:14px}
-.week-day-btn{background:var(--card);border:1px solid var(--line);color:var(--muted);padding:8px 0;border-radius:10px;font-size:11px;font-weight:600;cursor:pointer;text-align:center;transition:0.2s}
+.week-strip-nav{display:grid;grid-template-columns:repeat(7, 1fr);gap:6px;margin-bottom:20px}
+.week-day-btn{background:var(--card);border:1px solid var(--line);color:var(--muted);padding:10px 0;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;text-align:center;transition:0.2s}
 .week-day-btn.active{background:var(--accent);color:var(--on);border-color:var(--accent);font-weight:700}
 
-/* BARRE DE NAVIGATION FIXE EN BAS */
-.tabs{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:8px 6px calc(18px + env(safe-area-inset-bottom)) 6px;z-index:1000;box-shadow:0 -4px 20px rgba(0,0,0,0.3)}
-.tab{border:0;background:none;color:var(--muted);font-size:10px;font-weight:600;text-transform:uppercase;padding:8px 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;transition:0.2s}
-.tab.on{color:var(--accent)}
+.tabs{display:flex;gap:24px;border-bottom:1px solid var(--line);margin-bottom:24px}
+.tab{border:0;border-bottom:2px solid transparent;margin-bottom:-1px;background:none;color:var(--muted);font-size:13px;font-weight:600;text-transform:uppercase;padding:12px 0;cursor:pointer;display:flex;align-items:center;gap:6px}
+.tab.on{color:var(--accent);border-bottom-color:var(--accent)}
 
-/* Cartes et Widgets optimisés mobile */
-.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:14px;box-shadow:0 4px 20px rgba(0,0,0,0.15)}
-.status{border:1px solid var(--line);background:var(--card);border-radius:16px;padding:20px;margin-bottom:14px;border-left:4px solid var(--accent)}
-.big{display:flex;align-items:baseline;gap:14px}
-.big b{font-size:42px;font-weight:700;line-height:1;color:var(--accent)}
+@media(max-width:768px){
+  header{flex-direction:column;align-items:stretch;gap:12px}
+  .header-right{justify-content:space-between}
+  .tabs{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:8px 6px calc(16px + env(safe-area-inset-bottom)) 6px;z-index:1000;box-shadow:0 -4px 20px rgba(0,0,0,0.3);margin-bottom:0}
+  .tab{flex-direction:column;font-size:9px;padding:6px 4px;border-bottom:0;gap:2px;flex:1;text-align:center}
+  .tab.on{color:var(--accent);border-bottom-color:transparent}
+}
+
+.cols{display:grid;grid-template-columns:1.6fr 1fr;gap:20px}
+@media(max-width:768px){.cols{grid-template-columns:1fr}}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:0 4px 20px rgba(0,0,0,0.15)}
+.status{border:1px solid var(--line);background:var(--card);border-radius:16px;padding:22px;margin-bottom:16px;border-left:4px solid var(--accent)}
+.big{display:flex;align-items:baseline;gap:16px}
+.big b{font-size:48px;font-weight:700;line-height:1;color:var(--accent)}
 .big span{font-size:13px;font-weight:600;text-transform:uppercase;color:var(--muted)}
-.meta{display:flex;justify-content:space-between;align-items:center;margin:12px 0 14px;font-size:13px;color:var(--muted)}
+.meta{display:flex;justify-content:space-between;align-items:center;margin:14px 0;font-size:13px;color:var(--muted)}
 .chip{display:inline-block;border:1px solid var(--purple);color:var(--purple);background:rgba(139,92,246,0.1);padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600}
 .track{height:6px;background:var(--secondary);border-radius:3px;overflow:hidden}
 .track i{display:block;height:100%;width:0;background:var(--accent);transition:width 0.6s}
 
-.label{font-size:10px;text-transform:uppercase;letter-spacing:0.15em;color:var(--muted);margin-bottom:8px;font-weight:700}
-.goal{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.label{font-size:11px;text-transform:uppercase;letter-spacing:0.15em;color:var(--muted);margin-bottom:10px;font-weight:700}
+.goal{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--line)}
 .goal:last-child{border-bottom:0}
 .chk{width:30px;height:30px;min-width:30px;border-radius:8px;border:2px solid var(--muted);background:none;cursor:pointer;display:grid;place-items:center;color:var(--bg);font-weight:700;font-size:14px;transition:0.2s}
 .goal.done .chk{background:var(--accent);border-color:var(--accent);color:var(--on)}
-.goal .name{flex:1;font-weight:500;font-size:14px}
+.goal .name{flex:1;font-weight:500;font-size:15px}
 .goal.done .name{color:var(--muted);text-decoration:line-through}
 .del{border:0;background:none;color:var(--muted);cursor:pointer;font-size:15px;padding:6px;transition:0.2s}
 
@@ -83,7 +92,7 @@ h1{font-size:18px;font-weight:700;color:var(--purple);text-transform:uppercase;l
 .btn{width:100%;border:0;background:var(--accent);color:var(--on);padding:14px;border-radius:12px;font-size:13px;font-weight:700;text-transform:uppercase;cursor:pointer;transition:0.2s}
 .btn:active{transform:scale(0.98)}
 
-.monthly-item{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.monthly-item{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}
 .monthly-item:last-child{border-bottom:0}
 
 .hide{display:none}
@@ -93,79 +102,85 @@ h1{font-size:18px;font-weight:700;color:var(--purple);text-transform:uppercase;l
 
 <div class="app">
   <header>
-    <h1>Daily Tracker Pro</h1>
-    <div class="sync-status" id="syncStatus">Cloud : Connecté</div>
-    
-    <div class="header-top">
+    <div class="header-left">
+      <h1>Daily Tracker Pro</h1>
+      <div class="sync-status" id="syncStatus">Cloud : Connecté</div>
       <div class="date-title">
         <button class="icon-btn" id="prevDay">&lt;</button>
         <span id="todayText"></span>
         <button class="icon-btn" id="nextDay">&gt;</button>
-        <button class="icon-btn" id="todayReset" style="font-size:10px;padding:0 6px;width:auto">Aujourd'hui</button>
+        <button class="icon-btn" id="todayReset" style="font-size:11px;padding:0 8px;width:auto">Aujourd'hui</button>
       </div>
-      <div style="display:flex;gap:6px;align-items:center">
-        <input type="date" id="datePicker" style="background:var(--secondary);border:1px solid var(--line);color:var(--text);padding:6px;border-radius:10px;font-size:11px;cursor:pointer">
-        <button class="icon-btn" id="themeBtn" aria-label="Theme">&#9680;</button>
-      </div>
+    </div>
+    <div class="header-right">
+      <input type="date" id="datePicker" style="background:var(--secondary);border:1px solid var(--line);color:var(--text);padding:8px;border-radius:10px;font-size:12px;cursor:pointer">
+      <button class="icon-btn" id="themeBtn" aria-label="Theme">&#9680;</button>
     </div>
   </header>
 
   <div class="week-strip-nav" id="weekStrip"></div>
 
-  <!-- BARRE DE NAVIGATION FIXE EN BAS -->
   <div class="tabs">
     <button class="tab on" data-t="today"><span>📅</span><span>Aujourd'hui</span></button>
     <button class="tab" data-t="monthly"><span>📊</span><span>Mensuel</span></button>
     <button class="tab" data-t="habits"><span>🔥</span><span>Habitudes</span></button>
-    <button class="tab" data-t="settings"><span>⚙️</span><span>Réglages</span></button>
+    <button class="tab" data-t="settings"><span>⚙️</span><span>Paramètres</span></button>
   </div>
 
-  <!-- SECTION: TODAY & PLANNER -->
+  <!-- SECTION: TODAY & PLANNER (Tâches ponctuelles uniquement) -->
   <section id="sec-today">
-    <div class="status">
-      <div class="big"><b id="pct">0%</b><span id="msg">À exécuter</span></div>
-      <div class="meta"><span id="cnt">0 / 0 objectifs</span><span class="chip" id="streak">Série : 0 j</span></div>
-      <div class="track"><i id="fg"></i></div>
-    </div>
+    <div class="cols">
+      <div>
+        <div class="status">
+          <div class="big"><b id="pct">0%</b><span id="msg">À exécuter</span></div>
+          <div class="meta"><span id="cnt">0 / 0 objectifs</span><span class="chip" id="streak">Série : 0 j</span></div>
+          <div class="track"><i id="fg"></i></div>
+        </div>
 
-    <div class="status" style="border-left-color: var(--purple); margin-top: 14px;">
-      <div class="big"><b id="mainMonthlyPct" style="color: var(--purple);">0%</b><span style="color:var(--purple)">Objectifs Mensuels</span></div>
-      <div class="meta"><span id="mainMonthlyText">Progression du mois</span></div>
-      <div class="track"><i id="mainMonthlyFg" style="background: var(--purple);"></i></div>
-    </div>
+        <div class="status" style="border-left-color: var(--purple);">
+          <div class="big"><b id="mainMonthlyPct" style="color: var(--purple);">0%</b><span style="color:var(--purple)">Objectifs Mensuels</span></div>
+          <div class="meta"><span id="mainMonthlyText">Progression du mois</span></div>
+          <div class="track"><i id="mainMonthlyFg" style="background: var(--purple);"></i></div>
+        </div>
 
-    <div style="margin-top: 16px;">
-      <div class="label" id="listLabel">Objectifs du jour</div>
-      <div class="card" id="list"></div>
-    </div>
-
-    <div style="margin-top: 16px;">
-      <div class="label">Ajouter une tâche ponctuelle</div>
-      <div class="card add">
-        <input id="oneOffName" placeholder="Ex: Cours de médecine..." maxlength="60">
-        <button class="btn" id="addOneOffBtn">Ajouter à cette date</button>
+        <div class="label" id="listLabel" style="margin-top: 10px;">Objectifs du jour</div>
+        <div class="card" id="list"></div>
       </div>
 
-      <div class="label" style="margin-top: 16px;">Nouvelle habitude récurrente</div>
-      <div class="card add">
-        <input id="newHabitName" placeholder="Ex: Lire le Coran" maxlength="60">
-        <input id="habTarget" type="number" placeholder="Objectif jours/mois (ex: 30)" min="1" value="30" style="width:100%;border:1px solid var(--line);background:var(--secondary);color:var(--text);padding:12px 14px;border-radius:12px;font-size:14px;outline:none;margin-bottom:10px">
-        <div class="days" id="dayPick"></div>
-        <button class="btn" id="addHabitBtn">Créer l'habitude fixe</button>
-      </div>
+      <aside>
+        <div class="label">Ajouter une tâche ponctuelle</div>
+        <div class="card add">
+          <input id="oneOffName" placeholder="Ex: Rendez-vous, révision..." maxlength="60">
+          <button class="btn" id="addOneOffBtn">Ajouter à cette date</button>
+        </div>
+      </aside>
     </div>
   </section>
 
-  <!-- SECTION: MONTHLY GOALS -->
+  <!-- SECTION: MONTHLY GOALS (Suivi + Ajout d'habitudes fixes) -->
   <section id="sec-monthly" class="hide">
-    <div class="status" style="border-left-color: var(--purple);">
-      <div class="big"><b id="monthlyPct">0%</b><span style="color:var(--purple)">Global Mensuel</span></div>
-      <div class="meta"><span>Suivi des habitudes du mois</span></div>
-      <div class="track"><i id="monthlyFg" style="background: var(--purple);"></i></div>
-    </div>
+    <div class="cols">
+      <div>
+        <div class="status" style="border-left-color: var(--purple);">
+          <div class="big"><b id="monthlyPct">0%</b><span style="color:var(--purple)">Global Mensuel</span></div>
+          <div class="meta"><span>Suivi des habitudes du mois</span></div>
+          <div class="track"><i id="monthlyFg" style="background: var(--purple);"></i></div>
+        </div>
 
-    <div class="label">Détail des objectifs fixes</div>
-    <div class="card"><div id="monthlyList"></div></div>
+        <div class="label">Détail des objectifs fixes</div>
+        <div class="card"><div id="monthlyList"></div></div>
+      </div>
+
+      <aside>
+        <div class="label">Nouvelle habitude récurrente (Fixe)</div>
+        <div class="card add">
+          <input id="newHabitName" placeholder="Ex: Lire le Coran" maxlength="60">
+          <input id="habTarget" type="number" placeholder="Objectif jours/mois (ex: 30)" min="1" value="30" style="width:100%;border:1px solid var(--line);background:var(--secondary);color:var(--text);padding:12px 14px;border-radius:12px;font-size:14px;outline:none;margin-bottom:10px">
+          <div class="days" id="dayPick"></div>
+          <button class="btn" id="addHabitBtn">Créer l'habitude fixe</button>
+        </div>
+      </aside>
+    </div>
   </section>
 
   <!-- SECTION: HABITS MANAGER -->
@@ -363,7 +378,7 @@ function renderAll() {
 
   updateMonthlyProgressDisplay();
   if (currentTab === "today") renderToday();
-  else if (currentTab === "monthly") renderMonthly();
+  else if (currentTab === "monthly") { renderMonthly(); renderDayPick(); }
   else if (currentTab === "habits") renderHabits();
 }
 
@@ -384,6 +399,13 @@ function renderWeekStrip() {
     html += '<button class="week-day-btn ' + (isActive ? 'active' : '') + '" data-select-date="' + k + '">' + dayLabel + '</button>';
   }
   stripEl.innerHTML = html;
+}
+
+function renderDayPick() {
+  const dayPickEl = document.getElementById("dayPick");
+  if(dayPickEl) {
+    dayPickEl.innerHTML = DN.map((x, i) => '<button type="button" class="day ' + (draftDays.includes(i) ? "on" : "") + '" data-day="' + i + '">' + x + '</button>').join("");
+  }
 }
 
 function renderToday() {
@@ -416,8 +438,6 @@ function renderToday() {
       '<button class="del" data-del-item="' + item.id + '" data-type="' + item.type + '">&#10005;</button>' +
     '</div>';
   }).join("") : '<div class="empty" style="color:var(--muted);font-size:13px;padding:10px 0;">Aucune tâche pour ce jour.</div>';
-
-  document.getElementById("dayPick").innerHTML = DN.map((x, i) => '<button type="button" class="day ' + (draftDays.includes(i) ? "on" : "") + '" data-day="' + i + '">' + x + '</button>').join("");
 }
 
 function renderMonthly() {
@@ -509,7 +529,7 @@ document.addEventListener("click", e => {
   else if (t.dataset.day !== undefined) {
     let d = +t.dataset.day, idx = draftDays.indexOf(d);
     if (idx > -1) draftDays.splice(idx, 1); else draftDays.push(d);
-    draftDays.sort(); renderToday();
+    draftDays.sort(); renderDayPick();
   }
   else if (t.id === "addOneOffBtn") {
     let name = document.getElementById("oneOffName").value.trim();
@@ -525,7 +545,7 @@ document.addEventListener("click", e => {
     if (!name || !draftDays.length) return;
     state.habits.push({ id: uid(), name, days: draftDays.slice(), created: vk, monthlyTarget: target });
     document.getElementById("newHabitName").value = "";
-    saveData(); renderToday();
+    saveData(); renderAll();
   }
   else if (t.id === "exportBtn") {
     let blob = new Blob([JSON.stringify(state, null, 2)], {type: "application/json"});
