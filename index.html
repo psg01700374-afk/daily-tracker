@@ -111,6 +111,12 @@ header{border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:20p
 .badge-icon{font-size:24px;margin-bottom:4px}
 .badge-title{font-size:11px;font-weight:700}
 
+/* STYLE DES NOTES ENREGISTRÉES */
+.note-item{background:var(--secondary);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px;position:relative}
+.note-item .note-time{font-size:10px;color:var(--purple);font-weight:700;margin-bottom:4px;text-transform:uppercase}
+.note-item .note-content{font-size:13px;color:var(--text);line-height:1.4;white-space:pre-wrap}
+.note-item .note-del{position:absolute;top:8px;right:8px;border:0;background:none;color:var(--muted);cursor:pointer;font-size:14px}
+
 .hide{display:none}
 </style>
 </head>
@@ -164,15 +170,16 @@ header{border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:20p
         
         <div class="card" id="list"></div>
 
-        <!-- JOURNAL DU JOUR -->
-        <div class="label">Note / Journal du jour</div>
+        <!-- SAISIE DE NOTE -->
+        <div class="label">Ajouter une note au journal</div>
         <div class="card add" style="padding:14px">
-          <textarea id="dailyNote" rows="3" placeholder="Écris une note pour cette journée..." style="resize:none;margin-bottom:8px"></textarea>
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <button class="btn" id="saveNoteBtn" style="padding:8px;font-size:11px;width:auto;min-width:140px">Enregistrer la note</button>
-            <span id="noteSavedFeedback" style="font-size:11px;color:var(--accent);display:none">Enregistré ✓</span>
-          </div>
+          <textarea id="dailyNote" rows="2" placeholder="Écris une remarque, réflexion ou note du jour..." style="resize:none;margin-bottom:8px"></textarea>
+          <button class="btn" id="saveNoteBtn" style="padding:10px;font-size:11px">Ajouter la note</button>
         </div>
+
+        <!-- LISTE DES NOTES ENREGISTRÉES EN BAS -->
+        <div class="label" style="margin-top:16px">Notes du jour</div>
+        <div id="notesList"></div>
       </div>
 
       <aside>
@@ -287,7 +294,7 @@ header{border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:20p
 const JSONBIN_BIN_ID = "6af2218fffd5d16053b48c45";
 let JSONBIN_API_KEY = localStorage.getItem("jsonbin_api_key") || "";
 
-const STORAGE_KEY = "daily_tracker_pro_v8";
+const STORAGE_KEY = "daily_tracker_pro_v9";
 const DN = ["L", "M", "M", "J", "V", "S", "D"];
 const DAYS7 = [0, 1, 2, 3, 4, 5, 6];
 
@@ -330,7 +337,7 @@ function loadLocalData() {
     if (s) { 
       let parsed = JSON.parse(s); 
       if (parsed && Array.isArray(parsed.habits)) {
-        if(!parsed.notes) parsed.notes = {};
+        if(!parsed.dayNotes) parsed.dayNotes = {};
         return parsed;
       }
     }
@@ -343,7 +350,7 @@ function loadLocalData() {
     ],
     oneOffTasks: [],
     done: {},
-    notes: {}
+    dayNotes: {}
   };
 }
 
@@ -372,7 +379,7 @@ async function fetchCloudData() {
       const data = await res.json();
       if (data.record && Array.isArray(data.record.habits)) {
         state = data.record;
-        if(!state.notes) state.notes = {};
+        if(!state.dayNotes) state.dayNotes = {};
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
         renderAll();
         setSyncStatus("Cloud synchro ✓");
@@ -506,8 +513,27 @@ function renderToday() {
     '</div>';
   }).join("") : '<div class="empty" style="color:var(--muted);font-size:13px;padding:10px 0;">Aucune tâche affichée.</div>';
 
-  // Charger la note exacte de la date sélectionnée
-  document.getElementById("dailyNote").value = (state.notes && state.notes[vk]) ? state.notes[vk] : "";
+  // Rendu de la liste des notes sous la saisie
+  renderDayNotesList();
+}
+
+function renderDayNotesList() {
+  let vk = getViewingKey();
+  let notesContainer = document.getElementById("notesList");
+  let notesArr = (state.dayNotes && state.dayNotes[vk]) ? state.dayNotes[vk] : [];
+
+  if (!notesArr.length) {
+    notesContainer.innerHTML = '<div style="color:var(--muted);font-size:12px;font-style:italic">Aucune note enregistrée pour ce jour.</div>';
+    return;
+  }
+
+  notesContainer.innerHTML = notesArr.map(n => 
+    '<div class="note-item">' +
+      '<div class="note-time">' + n.time + '</div>' +
+      '<div class="note-content">' + n.text + '</div>' +
+      '<button class="note-del" data-del-note="' + n.id + '">&#10005;</button>' +
+    '</div>'
+  ).join("");
 }
 
 function renderStats() {
@@ -587,9 +613,9 @@ function renderDayPick() {
   }
 }
 
-// LOGIQUE CHRONO / POMODORO REPARÉE ET PERSONNALISABLE
+// CHRONO / POMODORO
 let pomoInterval = null;
-let pomoDuration = 25 * 60; // durée par défaut
+let pomoDuration = 25 * 60;
 let pomoTimeLeft = 25 * 60;
 
 function updatePomoDisplay() {
@@ -619,12 +645,10 @@ document.getElementById("applyCustomMinBtn").addEventListener("click", () => {
 
 document.getElementById("startPomoBtn").addEventListener("click", () => {
   if (pomoInterval) {
-    // Pause
     clearInterval(pomoInterval);
     pomoInterval = null;
     document.getElementById("startPomoBtn").textContent = "Reprendre";
   } else {
-    // Démarrage
     if (pomoTimeLeft <= 0) pomoTimeLeft = pomoDuration;
     document.getElementById("startPomoBtn").textContent = "Pause";
     pomoInterval = setInterval(() => {
@@ -647,18 +671,30 @@ document.getElementById("resetPomoBtn").addEventListener("click", () => {
   updatePomoDisplay();
 });
 
-// LOGIQUE DES NOTES
+// LOGIQUE DES NOTES (AJOUT EN BAS DE LA LISTE)
 document.getElementById("saveNoteBtn").addEventListener("click", () => {
+  let text = document.getElementById("dailyNote").value.trim();
+  if(!text) return;
+
   let vk = getViewingKey();
-  if (!state.notes) state.notes = {};
-  state.notes[vk] = document.getElementById("dailyNote").value.trim();
+  if (!state.dayNotes) state.dayNotes = {};
+  if (!state.dayNotes[vk]) state.dayNotes[vk] = [];
+
+  let now = new Date();
+  let timeStr = now.toLocaleTimeString("fr-FR", {hour: '2-digit', minute:'2-digit'});
+
+  state.dayNotes[vk].push({
+    id: uid(),
+    text: text,
+    time: timeStr
+  });
+
+  document.getElementById("dailyNote").value = "";
   saveData();
-  let feedback = document.getElementById("noteSavedFeedback");
-  feedback.style.display = "inline";
-  setTimeout(() => { feedback.style.display = "none"; }, 2000);
+  renderDayNotesList();
 });
 
-// ÉVÉNEMENTS GÉNERAUX
+// ÉVÉNEMENTS GÉNÉRAUX
 document.getElementById("saveKeyBtn").addEventListener("click", () => {
   JSONBIN_API_KEY = document.getElementById("cfgApiKey").value.trim();
   localStorage.setItem("jsonbin_api_key", JSONBIN_API_KEY);
@@ -696,6 +732,14 @@ document.addEventListener("click", e => {
     if (type === 'oneoff') { state.oneOffTasks = state.oneOffTasks.filter(x => x.id !== id); }
     else { if(!confirm("Supprimer ?")) return; state.habits = state.habits.filter(x => x.id !== id); }
     saveData(); renderAll();
+  }
+  else if (t.dataset.delNote) {
+    let noteId = t.dataset.delNote;
+    if (state.dayNotes && state.dayNotes[vk]) {
+      state.dayNotes[vk] = state.dayNotes[vk].filter(n => n.id !== noteId);
+      saveData();
+      renderDayNotesList();
+    }
   }
   else if (t.dataset.day !== undefined) {
     let d = +t.dataset.day, idx = draftDays.indexOf(d);
