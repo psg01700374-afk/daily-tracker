@@ -92,7 +92,11 @@ header{border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:20p
 .btn:active{transform:scale(0.98)}
 
 /* Pomodoro & Graphique */
-.pomo-display{font-size:42px;font-weight:800;text-align:center;color:var(--accent);margin:10px 0}
+.pomo-display{font-size:46px;font-weight:800;text-align:center;color:var(--accent);margin:12px 0;font-family:'Outfit',sans-serif}
+.pomo-preset{display:flex;gap:6px;margin-bottom:12px}
+.pomo-preset button{flex:1;background:var(--secondary);border:1px solid var(--line);color:var(--text);padding:6px;border-radius:8px;font-size:12px;cursor:pointer;font-weight:600}
+.pomo-preset button:hover{border-color:var(--accent)}
+
 .chart-bar-container{display:flex;align-items:flex-end;gap:8px;height:100px;padding-top:10px}
 .chart-bar{flex:1;background:var(--secondary);border-radius:6px 6px 0 0;position:relative;min-height:4px;transition:height 0.4s}
 .chart-bar-fill{background:var(--accent);width:100%;position:absolute;bottom:0;border-radius:6px 6px 0 0;transition:height 0.4s}
@@ -134,7 +138,7 @@ header{border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:20p
 
   <div class="tabs">
     <button class="tab on" data-t="today"><span>📅</span><span>Aujourd'hui</span></button>
-    <button class="tab" data-t="stats"><span>📈</span><span>Stats & Pomodoro</span></button>
+    <button class="tab" data-t="stats"><span>📈</span><span>Stats & Minuteur</span></button>
     <button class="tab" data-t="monthly"><span>📊</span><span>Mensuel</span></button>
     <button class="tab" data-t="settings"><span>⚙️</span><span>Paramètres</span></button>
   </div>
@@ -163,8 +167,11 @@ header{border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:20p
         <!-- JOURNAL DU JOUR -->
         <div class="label">Note / Journal du jour</div>
         <div class="card add" style="padding:14px">
-          <textarea id="dailyNote" rows="3" placeholder="Écris une note sur ta journée..." style="resize:none;margin-bottom:8px"></textarea>
-          <button class="btn" id="saveNoteBtn" style="padding:8px;font-size:11px">Enregistrer la note</button>
+          <textarea id="dailyNote" rows="3" placeholder="Écris une note pour cette journée..." style="resize:none;margin-bottom:8px"></textarea>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <button class="btn" id="saveNoteBtn" style="padding:8px;font-size:11px;width:auto;min-width:140px">Enregistrer la note</button>
+            <span id="noteSavedFeedback" style="font-size:11px;color:var(--accent);display:none">Enregistré ✓</span>
+          </div>
         </div>
       </div>
 
@@ -205,9 +212,22 @@ header{border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:20p
       </div>
 
       <aside>
-        <div class="label">Minuteur Pomodoro (Études)</div>
-        <div class="card" style="text-align:center">
+        <div class="label">Minuteur d'Études / Chrono</div>
+        <div class="card add" style="text-align:center">
           <div class="pomo-display" id="pomoTimer">25:00</div>
+          
+          <div class="pomo-preset">
+            <button type="button" data-min="15">15 min</button>
+            <button type="button" data-min="25">25 min</button>
+            <button type="button" data-min="35">35 min</button>
+            <button type="button" data-min="45">45 min</button>
+          </div>
+
+          <div style="display:flex;gap:6px;align-items:center;margin-bottom:12px">
+            <input type="number" id="customPomoMin" placeholder="Durée (ex: 30 min)" min="1" max="180" style="margin-bottom:0;padding:8px 10px;font-size:12px">
+            <button type="button" id="applyCustomMinBtn" style="background:var(--secondary);border:1px solid var(--line);color:var(--text);padding:8px 12px;border-radius:10px;font-size:12px;cursor:pointer;white-space:nowrap;font-weight:600">Définir</button>
+          </div>
+
           <div style="display:flex;gap:8px">
             <button class="btn" id="startPomoBtn">Démarrer</button>
             <button class="btn" id="resetPomoBtn" style="background:var(--secondary);color:var(--text);border:1px solid var(--line)">Raz</button>
@@ -267,7 +287,7 @@ header{border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:20p
 const JSONBIN_BIN_ID = "6af2218fffd5d16053b48c45";
 let JSONBIN_API_KEY = localStorage.getItem("jsonbin_api_key") || "";
 
-const STORAGE_KEY = "daily_tracker_pro_v7";
+const STORAGE_KEY = "daily_tracker_pro_v8";
 const DN = ["L", "M", "M", "J", "V", "S", "D"];
 const DAYS7 = [0, 1, 2, 3, 4, 5, 6];
 
@@ -307,7 +327,13 @@ function setSyncStatus(msg, isError = false) {
 function loadLocalData() {
   try {
     let s = localStorage.getItem(STORAGE_KEY);
-    if (s) { let parsed = JSON.parse(s); if (parsed && Array.isArray(parsed.habits)) return parsed; }
+    if (s) { 
+      let parsed = JSON.parse(s); 
+      if (parsed && Array.isArray(parsed.habits)) {
+        if(!parsed.notes) parsed.notes = {};
+        return parsed;
+      }
+    }
   } catch(e) {}
   let t = key(new Date());
   return {
@@ -462,7 +488,6 @@ function renderToday() {
   document.getElementById("todayText").textContent = dateText.charAt(0).toUpperCase() + dateText.slice(1);
   document.getElementById("listLabel").textContent = "Objectifs (" + viewingDate.toLocaleDateString("fr-FR", {day:"numeric", month:"short"}) + ")";
 
-  // Filtrage des tâches
   let filteredList = s.list.filter(item => {
     let done = (state.done[vk] || []).indexOf(item.id) > -1;
     if (currentFilter === "todo") return !done;
@@ -481,12 +506,11 @@ function renderToday() {
     '</div>';
   }).join("") : '<div class="empty" style="color:var(--muted);font-size:13px;padding:10px 0;">Aucune tâche affichée.</div>';
 
-  // Charger la note du jour
-  document.getElementById("dailyNote").value = (state.notes && state.notes[vk]) || "";
+  // Charger la note exacte de la date sélectionnée
+  document.getElementById("dailyNote").value = (state.notes && state.notes[vk]) ? state.notes[vk] : "";
 }
 
 function renderStats() {
-  // Graphique sur 7 jours
   let chartEl = document.getElementById("weeklyChart");
   let html = "";
   let d = new Date();
@@ -504,7 +528,6 @@ function renderStats() {
   }
   chartEl.innerHTML = html;
 
-  // Badges de Succès
   let st = calcStreak();
   let mRes = calculateMonthlyProgress();
   let badges = [
@@ -564,43 +587,86 @@ function renderDayPick() {
   }
 }
 
-// MINUTEUR POMODORO
+// LOGIQUE CHRONO / POMODORO REPARÉE ET PERSONNALISABLE
 let pomoInterval = null;
-let pomoTime = 25 * 60;
+let pomoDuration = 25 * 60; // durée par défaut
+let pomoTimeLeft = 25 * 60;
+
+function updatePomoDisplay() {
+  let m = String(Math.floor(pomoTimeLeft / 60)).padStart(2, '0');
+  let s = String(pomoTimeLeft % 60).padStart(2, '0');
+  document.getElementById("pomoTimer").textContent = m + ":" + s;
+}
+
+function setPomoMinutes(mins) {
+  let val = parseInt(mins, 10);
+  if (isNaN(val) || val <= 0) return;
+  if (pomoInterval) { clearInterval(pomoInterval); pomoInterval = null; }
+  pomoDuration = val * 60;
+  pomoTimeLeft = pomoDuration;
+  document.getElementById("startPomoBtn").textContent = "Démarrer";
+  updatePomoDisplay();
+}
+
+document.querySelectorAll(".pomo-preset button").forEach(btn => {
+  btn.addEventListener("click", () => setPomoMinutes(btn.dataset.min));
+});
+
+document.getElementById("applyCustomMinBtn").addEventListener("click", () => {
+  let val = document.getElementById("customPomoMin").value;
+  if(val) { setPomoMinutes(val); document.getElementById("customPomoMin").value = ""; }
+});
+
 document.getElementById("startPomoBtn").addEventListener("click", () => {
   if (pomoInterval) {
-    clearInterval(pomoInterval); pomoInterval = null;
-    document.getElementById("startPomoBtn").textContent = "Démarrer";
+    // Pause
+    clearInterval(pomoInterval);
+    pomoInterval = null;
+    document.getElementById("startPomoBtn").textContent = "Reprendre";
   } else {
+    // Démarrage
+    if (pomoTimeLeft <= 0) pomoTimeLeft = pomoDuration;
     document.getElementById("startPomoBtn").textContent = "Pause";
     pomoInterval = setInterval(() => {
-      pomoTime--;
-      let m = String(Math.floor(pomoTime / 60)).padStart(2, '0');
-      let s = String(pomoTime % 60).padStart(2, '0');
-      document.getElementById("pomoTimer").textContent = m + ":" + s;
-      if(pomoTime <= 0) { clearInterval(pomoInterval); alert("Session d'étude terminée ! Prends une pause."); }
+      pomoTimeLeft--;
+      updatePomoDisplay();
+      if(pomoTimeLeft <= 0) {
+        clearInterval(pomoInterval);
+        pomoInterval = null;
+        document.getElementById("startPomoBtn").textContent = "Démarrer";
+        alert("Session d'étude terminée ! Prends une pause.");
+      }
     }, 1000);
   }
 });
+
 document.getElementById("resetPomoBtn").addEventListener("click", () => {
-  clearInterval(pomoInterval); pomoInterval = null; pomoTime = 25 * 60;
-  document.getElementById("pomoTimer").textContent = "25:00";
+  if (pomoInterval) { clearInterval(pomoInterval); pomoInterval = null; }
+  pomoTimeLeft = pomoDuration;
   document.getElementById("startPomoBtn").textContent = "Démarrer";
+  updatePomoDisplay();
 });
 
-// ÉVÉNEMENTS
+// LOGIQUE DES NOTES
+document.getElementById("saveNoteBtn").addEventListener("click", () => {
+  let vk = getViewingKey();
+  if (!state.notes) state.notes = {};
+  state.notes[vk] = document.getElementById("dailyNote").value.trim();
+  saveData();
+  let feedback = document.getElementById("noteSavedFeedback");
+  feedback.style.display = "inline";
+  setTimeout(() => { feedback.style.display = "none"; }, 2000);
+});
+
+// ÉVÉNEMENTS GÉNERAUX
 document.getElementById("saveKeyBtn").addEventListener("click", () => {
   JSONBIN_API_KEY = document.getElementById("cfgApiKey").value.trim();
   localStorage.setItem("jsonbin_api_key", JSONBIN_API_KEY);
   fetchCloudData();
 });
 
-document.getElementById("saveNoteBtn").addEventListener("click", () => {
-  let vk = getViewingKey();
-  if(!state.notes) state.notes = {};
-  state.notes[vk] = document.getElementById("dailyNote").value;
-  saveData();
-  alert("Note enregistrée !");
+document.getElementById("datePicker").addEventListener("change", e => {
+  if(e.target.value) { viewingDate = parseKey(e.target.value); renderToday(); }
 });
 
 document.addEventListener("click", e => {
@@ -654,6 +720,14 @@ document.addEventListener("click", e => {
     state.habits.push({ id: uid(), name, days: draftDays.slice(), created: vk, monthlyTarget: target, category });
     document.getElementById("newHabitName").value = "";
     saveData(); renderAll();
+  }
+  else if (t.id === "exportBtn") {
+    let blob = new Blob([JSON.stringify(state, null, 2)], {type: "application/json"});
+    let a = document.createElement("a"); a.href = URL.createObjectURL(blob);
+    a.download = "daily-tracker-backup.json"; a.click();
+  }
+  else if (t.id === "resetBtn") {
+    if (confirm("Tout effacer ?")) { localStorage.removeItem(STORAGE_KEY); state = loadLocalData(); renderAll(); }
   }
 });
 
