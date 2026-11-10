@@ -169,17 +169,6 @@ header{border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:20p
         </div>
         
         <div class="card" id="list"></div>
-
-        <!-- SAISIE DE NOTE -->
-        <div class="label">Ajouter une note au journal</div>
-        <div class="card add" style="padding:14px">
-          <textarea id="dailyNote" rows="2" placeholder="Écris une remarque, réflexion ou note du jour..." style="resize:none;margin-bottom:8px"></textarea>
-          <button class="btn" id="saveNoteBtn" style="padding:10px;font-size:11px">Ajouter la note</button>
-        </div>
-
-        <!-- LISTE DES NOTES ENREGISTRÉES EN BAS -->
-        <div class="label" style="margin-top:16px">Notes du jour</div>
-        <div id="notesList"></div>
       </div>
 
       <aside>
@@ -199,6 +188,16 @@ header{border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:20p
           </select>
           <button class="btn" id="addOneOffBtn">Ajouter à cette date</button>
         </div>
+
+        <!-- SAISIE ET LISTE DE NOTES PLACÉES EN DERNIER (EN BAS) -->
+        <div class="label" style="margin-top:20px">Ajouter une note au journal</div>
+        <div class="card add" style="padding:14px">
+          <textarea id="dailyNote" rows="2" placeholder="Écris une remarque, réflexion ou note du jour..." style="resize:none;margin-bottom:8px"></textarea>
+          <button class="btn" id="saveNoteBtn" style="padding:10px;font-size:11px">Ajouter la note</button>
+        </div>
+
+        <div class="label" style="margin-top:16px">Notes du jour</div>
+        <div id="notesList"></div>
       </aside>
     </div>
   </section>
@@ -294,7 +293,7 @@ header{border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:20p
 const JSONBIN_BIN_ID = "6af2218fffd5d16053b48c45";
 let JSONBIN_API_KEY = localStorage.getItem("jsonbin_api_key") || "";
 
-const STORAGE_KEY = "daily_tracker_pro_v9";
+const STORAGE_KEY = "daily_tracker_pro_v10";
 const DN = ["L", "M", "M", "J", "V", "S", "D"];
 const DAYS7 = [0, 1, 2, 3, 4, 5, 6];
 
@@ -513,7 +512,6 @@ function renderToday() {
     '</div>';
   }).join("") : '<div class="empty" style="color:var(--muted);font-size:13px;padding:10px 0;">Aucune tâche affichée.</div>';
 
-  // Rendu de la liste des notes sous la saisie
   renderDayNotesList();
 }
 
@@ -671,7 +669,7 @@ document.getElementById("resetPomoBtn").addEventListener("click", () => {
   updatePomoDisplay();
 });
 
-// LOGIQUE DES NOTES (AJOUT EN BAS DE LA LISTE)
+// LOGIQUE DES NOTES
 document.getElementById("saveNoteBtn").addEventListener("click", () => {
   let text = document.getElementById("dailyNote").value.trim();
   if(!text) return;
